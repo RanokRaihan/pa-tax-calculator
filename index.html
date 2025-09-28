@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pennsylvania State Tax Calculator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Pennsylvania State Tax Calculator</h1>
+        <p>Calculate your take-home pay with detailed tax breakdown</p>
+      </header>
+
+      <div class="main-content">
+        <!-- Left Side - Input Form -->
+        <div class="input-section">
+          <div class="form-card">
+            <h2>Pay Information</h2>
+
+            <form id="taxCalculatorForm">
+              <!-- Pay Frequency -->
+              <div class="form-group">
+                <label for="payFrequency">Pay Frequency</label>
+                <select id="payFrequency" name="payFrequency" required>
+                  <option value="weekly">Weekly</option>
+                  <option value="biweekly" selected>Biweekly</option>
+                  <option value="semi-monthly">Semi-Monthly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="annually">Annually</option>
+                </select>
+              </div>
+
+              <!-- Filing Status -->
+              <div class="form-group">
+                <label for="filingStatus">Filing Status</label>
+                <select id="filingStatus" name="filingStatus" required>
+                  <option value="single" selected>
+                    Single or filing separately
+                  </option>
+                  <option value="married">Married Filing Jointly</option>
+                </select>
+              </div>
+
+              <!-- Pay Type -->
+              <div class="form-group">
+                <label for="payType">Pay Type</label>
+                <div class="pay-type-toggle">
+                  <input
+                    type="radio"
+                    id="hourly"
+                    name="payType"
+                    value="hourly"
+                    checked
+                  />
+                  <label for="hourly" class="toggle-label">Hourly</label>
+                  <input
+                    type="radio"
+                    id="salary"
+                    name="payType"
+                    value="salary"
+                  />
+                  <label for="salary" class="toggle-label">Salary</label>
+                </div>
+              </div>
+
+              <!-- Hourly Inputs -->
+              <div id="hourlyInputs" class="pay-inputs">
+                <div class="form-group">
+                  <label for="hourlyRate">Hourly Rate ($)</label>
+                  <input
+                    type="number"
+                    id="hourlyRate"
+                    name="hourlyRate"
+                    step="0.01"
+                    min="0"
+                    placeholder="25.00"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="regularHours">Regular Hours</label>
+                  <input
+                    type="number"
+                    id="regularHours"
+                    name="regularHours"
+                    step="0.01"
+                    min="0"
+                    placeholder="40"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="overtimeHours">Overtime Hours</label>
+                  <input
+                    type="number"
+                    id="overtimeHours"
+                    name="overtimeHours"
+                    step="0.1"
+                    min="0"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+
+              <!-- Salary Inputs -->
+              <div id="salaryInputs" class="pay-inputs hidden">
+                <div class="form-group">
+                  <label for="annualSalary">Annual Salary ($)</label>
+                  <input
+                    type="number"
+                    id="annualSalary"
+                    name="annualSalary"
+                    step="1"
+                    min="0"
+                    placeholder="75000"
+                  />
+                </div>
+              </div>
+
+              <!-- Deductions -->
+              <div class="deductions-section">
+                <h3>Deductions (Optional)</h3>
+
+                <div class="form-group">
+                  <label for="preTaxDeductions">Pre-Tax Deductions ($)</label>
+                  <input
+                    type="number"
+                    id="preTaxDeductions"
+                    name="preTaxDeductions"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                  />
+                  <small>401k, health insurance, etc.</small>
+                </div>
+
+                <div class="form-group">
+                  <label for="postTaxDeductions">Post-Tax Deductions ($)</label>
+                  <input
+                    type="number"
+                    id="postTaxDeductions"
+                    name="postTaxDeductions"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                  />
+                  <small>Roth IRA, life insurance, etc.</small>
+                </div>
+
+                <div class="form-group">
+                  <label for="localTax">Local/City Tax Rate (%)</label>
+                  <input
+                    type="number"
+                    id="localTax"
+                    name="localTax"
+                    step="0.01"
+                    min="0"
+                    max="10"
+                    placeholder="0.00"
+                  />
+                  <small>Philadelphia: 3.87%, Pittsburgh: 3.00%</small>
+                </div>
+              </div>
+
+              <button type="submit" class="calculate-btn">
+                Calculate Take-Home Pay
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right Side - Results -->
+        <div class="results-section">
+          <div class="results-card">
+            <div id="financialTips" class="financial-tips">
+              <h2>💡 Financial Tips</h2>
+              <div id="tipContent" class="tip-content">
+                <p>Loading helpful financial advice...</p>
+              </div>
+            </div>
+
+            <div id="calculationResults" class="calculation-results hidden">
+              <h2>Your Take-Home Pay</h2>
+
+              <div class="net-pay">
+                <div class="net-pay-amount">
+                  <span class="currency">$</span>
+                  <span id="netPay">0.00</span>
+                </div>
+                <div class="pay-period" id="payPeriodLabel">per paycheck</div>
+              </div>
+
+              <div class="breakdown">
+                <h3>Detailed Breakdown</h3>
+
+                <div class="breakdown-section">
+                  <h4>Gross Income</h4>
+                  <div class="breakdown-item">
+                    <span>Gross Pay</span>
+                    <span id="grossPay">$0.00</span>
+                  </div>
+                </div>
+
+                <div class="breakdown-section">
+                  <h4>Pre-Tax Deductions</h4>
+                  <div class="breakdown-item">
+                    <span>Pre-Tax Deductions</span>
+                    <span id="preTaxAmount">$0.00</span>
+                  </div>
+                  <div class="breakdown-item taxable">
+                    <span>Taxable Income</span>
+                    <span id="taxableIncome">$0.00</span>
+                  </div>
+                </div>
+
+                <div class="breakdown-section">
+                  <h4>Federal Taxes</h4>
+                  <div class="breakdown-item">
+                    <span>Federal Income Tax</span>
+                    <span id="federalTax">$0.00</span>
+                  </div>
+                  <div class="breakdown-item">
+                    <span>Social Security (6.2%)</span>
+                    <span id="socialSecurity">$0.00</span>
+                  </div>
+                  <div class="breakdown-item">
+                    <span>Medicare (1.45%)</span>
+                    <span id="medicare">$0.00</span>
+                  </div>
+                </div>
+
+                <div class="breakdown-section">
+                  <h4>State & Local Taxes</h4>
+                  <div class="breakdown-item">
+                    <span>PA State Income Tax (3.07%)</span>
+                    <span id="stateTax">$0.00</span>
+                  </div>
+                  <div class="breakdown-item" id="localTaxRow">
+                    <span>Local Tax</span>
+                    <span id="localTaxAmount">$0.00</span>
+                  </div>
+                </div>
+
+                <div class="breakdown-section">
+                  <h4>Post-Tax Deductions</h4>
+                  <div class="breakdown-item">
+                    <span>Post-Tax Deductions</span>
+                    <span id="postTaxAmount">$0.00</span>
+                  </div>
+                </div>
+
+                <div class="summary">
+                  <div class="summary-item">
+                    <span>Total Deductions</span>
+                    <span id="totalDeductions">$0.00</span>
+                  </div>
+                  <div class="summary-item net">
+                    <span>Net Take-Home Pay</span>
+                    <span id="finalNetPay">$0.00</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
