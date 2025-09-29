@@ -6,11 +6,11 @@
 }
 
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
   color: #e0e0e0;
   line-height: 1.6;
   min-height: 100vh;
+  font-family: "Nunito", sans-serif;
 }
 
 /* Container and layout */
@@ -269,7 +269,7 @@ header p {
 .net-pay-amount {
   font-size: 3.5rem;
   font-weight: 700;
-  color: #ffffff;
+  color: #00e432;
   margin-bottom: 10px;
 }
 
@@ -437,6 +437,10 @@ header p {
   .breakdown-section {
     padding: 15px;
     margin-bottom: 20px;
+  }
+  .breakdown {
+    padding: 0;
+    background: none;
   }
 }
 
