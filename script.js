@@ -77,15 +77,60 @@ class TaxCalculator {
     this.init();
   }
 
+  // localStorage functions for hourly rate
+  saveHourlyRate(rate) {
+    try {
+      localStorage.setItem("paCalc_hourlyRate", rate.toString());
+      this.showSaveIndicator();
+    } catch (error) {
+      console.warn("Could not save hourly rate to localStorage:", error);
+    }
+  }
+
+  showSaveIndicator() {
+    const hourlyRateInput = document.getElementById("hourlyRate");
+    const originalBorder = hourlyRateInput.style.border;
+
+    // Briefly flash green border to indicate save
+    hourlyRateInput.style.border = "2px solid #4CAF50";
+    hourlyRateInput.style.transition = "border 0.3s ease";
+
+    setTimeout(() => {
+      hourlyRateInput.style.border = originalBorder;
+    }, 600);
+  }
+
+  loadHourlyRate() {
+    try {
+      const savedRate = localStorage.getItem("paCalc_hourlyRate");
+      return savedRate ? parseFloat(savedRate) : null;
+    } catch (error) {
+      console.warn("Could not load hourly rate from localStorage:", error);
+      return null;
+    }
+  }
+
   init() {
     this.bindEvents();
+    this.loadSavedData();
     this.showRandomTip();
     this.togglePayInputs(); // Set initial state
+  }
+
+  loadSavedData() {
+    // Load saved hourly rate and set as default value
+    const savedHourlyRate = this.loadHourlyRate();
+    if (savedHourlyRate !== null && savedHourlyRate > 0) {
+      const hourlyRateInput = document.getElementById("hourlyRate");
+      hourlyRateInput.value = savedHourlyRate.toFixed(2);
+      console.log(`Loaded saved hourly rate: $${savedHourlyRate.toFixed(2)}`);
+    }
   }
 
   bindEvents() {
     const form = document.getElementById("taxCalculatorForm");
     const payTypeInputs = document.querySelectorAll('input[name="payType"]');
+    const hourlyRateInput = document.getElementById("hourlyRate");
 
     form.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -96,6 +141,28 @@ class TaxCalculator {
       input.addEventListener("change", () => {
         this.togglePayInputs();
       });
+    });
+
+    // Save hourly rate to localStorage when user changes it
+    let saveTimeout;
+    hourlyRateInput.addEventListener("input", (e) => {
+      // Debounce the save to avoid excessive localStorage writes
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        const rate = parseFloat(e.target.value);
+        if (!isNaN(rate) && rate > 0) {
+          this.saveHourlyRate(rate);
+        }
+      }, 500); // Wait 500ms after user stops typing
+    });
+
+    // Also save immediately when the user leaves the input field
+    hourlyRateInput.addEventListener("blur", (e) => {
+      clearTimeout(saveTimeout); // Cancel debounced save
+      const rate = parseFloat(e.target.value);
+      if (!isNaN(rate) && rate > 0) {
+        this.saveHourlyRate(rate);
+      }
     });
   }
 
