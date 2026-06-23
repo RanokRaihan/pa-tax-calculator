@@ -4,65 +4,36 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- #22: meta description for search engines -->
+    <meta name="description" content="Calculate your Pennsylvania take-home pay with a full breakdown of federal, state, and local taxes — including FICA, PA 3.07% flat rate, and local EIT." />
+
     <meta property="og:title" content="PA State Tax Calculator" />
-    <meta
-      property="og:description"
-      content="Calculate your Pennsylvania paycheck take-home pay with a full tax breakdown."
-    />
-    <meta
-      property="og:image"
-      content="https://ranokraihan.github.io/pa-tax-calculator/assets/images/og-image.png"
-    />
+    <meta property="og:description" content="Calculate your Pennsylvania paycheck take-home pay with a full tax breakdown." />
+    <meta property="og:image" content="https://ranokraihan.github.io/pa-tax-calculator/assets/images/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type" content="image/png" />
-    <meta
-      property="og:url"
-      content="https://ranokraihan.github.io/pa-tax-calculator/"
-    />
+    <meta property="og:url" content="https://ranokraihan.github.io/pa-tax-calculator/" />
     <meta property="og:type" content="website" />
 
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="PA State Tax Calculator" />
-    <meta
-      name="twitter:description"
-      content="Calculate your Pennsylvania paycheck take-home pay with a full tax breakdown."
-    />
-    <meta
-      name="twitter:image"
-      content="https://ranokraihan.github.io/pa-tax-calculator/assets/images/og-image.png"
-    />
+    <meta name="twitter:description" content="Calculate your Pennsylvania paycheck take-home pay with a full tax breakdown." />
+    <meta name="twitter:image" content="https://ranokraihan.github.io/pa-tax-calculator/assets/images/og-image.png" />
 
-    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="assets/images/favicon.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="assets/images/favicon.png"
-    />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png" />
     <link rel="apple-touch-icon" href="assets/images/favicon.png" />
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="assets/images/favicon.png"
-    />
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/favicon.png" />
+
     <title>Pennsylvania State Tax Calculator</title>
     <link rel="stylesheet" href="styles.css" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-      rel="stylesheet"
-    />
+    <!-- #1: All three families now actually used (Bebas Neue → display, Poppins → UI labels, Nunito → body) -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div class="container">
@@ -71,14 +42,22 @@
         <p>Calculate your take-home pay with detailed tax breakdown</p>
       </header>
 
-      <div class="main-content">
+      <!-- #14: Mobile tab switcher — only visible below 1024px -->
+      <div class="mobile-tabs" id="mobileTabs">
+        <button class="tab-btn active" data-tab="inputs">Inputs</button>
+        <button class="tab-btn" data-tab="results">Results</button>
+      </div>
+
+      <div class="main-content show-inputs" id="mainContent">
         <!-- Left Side - Input Form -->
         <div class="input-section">
           <div class="form-card">
             <h2>Pay Information</h2>
 
             <form id="taxCalculatorForm">
-              <!-- Pay Frequency -->
+              <!-- #5: Inline error replaces browser alert() -->
+              <div id="formError" class="form-error" role="alert"></div>
+
               <div class="form-group">
                 <label for="payFrequency">Pay Frequency</label>
                 <select id="payFrequency" name="payFrequency" required>
@@ -90,139 +69,88 @@
                 </select>
               </div>
 
-              <!-- Filing Status -->
               <div class="form-group">
                 <label for="filingStatus">Filing Status</label>
                 <select id="filingStatus" name="filingStatus" required>
-                  <option value="single" selected>
-                    Single or filing separately
-                  </option>
+                  <option value="single" selected>Single or filing separately</option>
                   <option value="married">Married Filing Jointly</option>
                 </select>
               </div>
 
-              <!-- Pay Type -->
               <div class="form-group">
-                <label for="payType">Pay Type</label>
+                <label>Pay Type</label>
                 <div class="pay-type-toggle">
-                  <input
-                    type="radio"
-                    id="hourly"
-                    name="payType"
-                    value="hourly"
-                    checked
-                  />
+                  <input type="radio" id="hourly" name="payType" value="hourly" checked />
                   <label for="hourly" class="toggle-label">Hourly</label>
-                  <input
-                    type="radio"
-                    id="salary"
-                    name="payType"
-                    value="salary"
-                  />
+                  <input type="radio" id="salary" name="payType" value="salary" />
                   <label for="salary" class="toggle-label">Salary</label>
                 </div>
               </div>
 
-              <!-- Hourly Inputs -->
               <div id="hourlyInputs" class="pay-inputs">
                 <div class="form-group">
                   <label for="hourlyRate">Hourly Rate ($)</label>
-                  <input
-                    type="number"
-                    id="hourlyRate"
-                    name="hourlyRate"
-                    step="0.01"
-                    min="0"
-                    placeholder="25.00"
-                  />
+                  <input type="number" id="hourlyRate" name="hourlyRate" step="0.01" min="0.01" placeholder="25.00" />
                 </div>
                 <div class="form-group">
                   <label for="regularHours">Regular Hours</label>
-                  <input
-                    type="number"
-                    id="regularHours"
-                    name="regularHours"
-                    step="0.01"
-                    min="0"
-                    placeholder="40"
-                  />
+                  <input type="number" id="regularHours" name="regularHours" step="0.01" min="0" placeholder="40" />
                 </div>
                 <div class="form-group">
                   <label for="overtimeHours">Overtime Hours</label>
-                  <input
-                    type="number"
-                    id="overtimeHours"
-                    name="overtimeHours"
-                    step="0.1"
-                    min="0"
-                    placeholder="0"
-                  />
+                  <input type="number" id="overtimeHours" name="overtimeHours" step="0.1" min="0" placeholder="0" />
                 </div>
               </div>
 
-              <!-- Salary Inputs -->
               <div id="salaryInputs" class="pay-inputs hidden">
                 <div class="form-group">
                   <label for="annualSalary">Annual Salary ($)</label>
-                  <input
-                    type="number"
-                    id="annualSalary"
-                    name="annualSalary"
-                    step="1"
-                    min="0"
-                    placeholder="75000"
-                  />
+                  <input type="number" id="annualSalary" name="annualSalary" step="1" min="0" placeholder="75000" />
                 </div>
               </div>
 
-              <!-- Deductions -->
-              <div class="deductions-section">
-                <h3>Deductions (Optional)</h3>
+              <!-- #19: Deductions accordion — collapsed by default -->
+              <div class="deductions-section" id="deductionsSection">
+                <button type="button" class="deductions-toggle" id="deductionsToggle"
+                  aria-expanded="false" aria-controls="deductionsBody">
+                  <span>Deductions <span class="optional-label">(Optional)</span></span>
+                  <svg class="deductions-chevron" width="16" height="16" viewBox="0 0 16 16"
+                    fill="none" aria-hidden="true">
+                    <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
 
-                <div class="form-group">
-                  <label for="preTaxDeductions">Pre-Tax Deductions ($)</label>
-                  <input
-                    type="number"
-                    id="preTaxDeductions"
-                    name="preTaxDeductions"
-                    step="0.01"
-                    min="0"
-                    placeholder="0.00"
-                  />
-                  <small>401k, health insurance, etc.</small>
-                </div>
-
-                <div class="form-group">
-                  <label for="postTaxDeductions">Post-Tax Deductions ($)</label>
-                  <input
-                    type="number"
-                    id="postTaxDeductions"
-                    name="postTaxDeductions"
-                    step="0.01"
-                    min="0"
-                    placeholder="0.00"
-                  />
-                  <small>Roth IRA, life insurance, etc.</small>
-                </div>
-
-                <div class="form-group">
-                  <label for="localTax">Local/City Tax Rate (%)</label>
-                  <input
-                    type="number"
-                    id="localTax"
-                    name="localTax"
-                    step="0.01"
-                    min="0"
-                    max="10"
-                    placeholder="0.00"
-                  />
-                  <small>Philadelphia: 3.87%, Pittsburgh: 3.00%</small>
+                <div class="deductions-body" id="deductionsBody">
+                  <div class="form-group">
+                    <label for="preTaxBenefits">Pre-Tax Benefits ($)</label>
+                    <input type="number" id="preTaxBenefits" name="preTaxBenefits" step="0.01" min="0" placeholder="0.00" />
+                    <small>Health/dental/vision, FSA — reduces income tax &amp; FICA</small>
+                  </div>
+                  <div class="form-group">
+                    <label for="retirementContributions">Retirement Contributions ($)</label>
+                    <input type="number" id="retirementContributions" name="retirementContributions" step="0.01" min="0" placeholder="0.00" />
+                    <small>401k, 403b — reduces income tax only, not FICA</small>
+                  </div>
+                  <div class="form-group">
+                    <label for="postTaxDeductions">Post-Tax Deductions ($)</label>
+                    <input type="number" id="postTaxDeductions" name="postTaxDeductions" step="0.01" min="0" placeholder="0.00" />
+                    <small>Roth IRA, life insurance, etc.</small>
+                  </div>
+                  <div class="form-group">
+                    <label for="localTax">Local/City Tax Rate (%)</label>
+                    <input type="number" id="localTax" name="localTax" step="0.01" min="0" max="10" placeholder="0.00" />
+                    <small>Philadelphia: 3.87%, Pittsburgh: 3.00%</small>
+                  </div>
                 </div>
               </div>
 
-              <button type="submit" class="calculate-btn">
-                Calculate Take-Home Pay
-              </button>
+              <button type="submit" class="calculate-btn">Calculate Take-Home Pay</button>
+
+              <!-- #4: Keyboard shortcut discovery -->
+              <p class="keyboard-hints">
+                <kbd>Ctrl/⌘ Enter</kbd> to calculate &nbsp;·&nbsp; <kbd>Esc</kbd> to reset
+              </p>
             </form>
           </div>
         </div>
@@ -235,10 +163,18 @@
               <div id="tipContent" class="tip-content">
                 <p>Loading helpful financial advice...</p>
               </div>
+              <!-- #10: Next tip cycling -->
+              <button type="button" class="next-tip-btn" id="nextTipBtn">Next tip →</button>
             </div>
 
             <div id="calculationResults" class="calculation-results hidden">
-              <h2>Your Take-Home Pay</h2>
+              <!-- #3: Visible reset button -->
+              <div class="results-header">
+                <h2>Your Take-Home Pay</h2>
+                <button type="button" class="reset-btn" id="resetBtn" title="Reset calculator (Esc)">
+                  ↩ Reset
+                </button>
+              </div>
 
               <div class="net-pay">
                 <div class="net-pay-amount">
@@ -246,64 +182,88 @@
                   <span id="netPay">0.00</span>
                 </div>
                 <div class="pay-period" id="payPeriodLabel">per paycheck</div>
+                <!-- #11: Moved from inline styles to CSS class -->
+                <div id="negativePayWarning" class="pay-warning">
+                  ⚠ Deductions exceed gross pay. Check your entries.
+                </div>
               </div>
 
               <div class="breakdown">
-                <h3>Detailed Breakdown</h3>
-
-                <div class="breakdown-section">
-                  <h4>Gross Income</h4>
-                  <div class="breakdown-item">
-                    <span>Gross Pay</span>
-                    <span id="grossPay">$0.00</span>
-                  </div>
+                <div class="breakdown-header">
+                  <button type="button" class="breakdown-toggle" id="breakdownToggle"
+                    aria-expanded="false" aria-controls="breakdownSections">
+                    <span class="breakdown-toggle-label">
+                      <span>Detailed Breakdown</span>
+                      <span class="expand-hint">Click to see line-by-line details</span>
+                    </span>
+                    <svg class="breakdown-chevron" width="16" height="16" viewBox="0 0 16 16"
+                      fill="none" aria-hidden="true">
+                      <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+                  <button type="button" class="period-toggle-btn" id="periodToggleBtn">Show Annual</button>
                 </div>
 
-                <div class="breakdown-section">
-                  <h4>Pre-Tax Deductions</h4>
-                  <div class="breakdown-item">
-                    <span>Pre-Tax Deductions</span>
-                    <span id="preTaxAmount">$0.00</span>
+                <div id="breakdownSections" class="breakdown-sections collapsed">
+                  <div class="breakdown-section">
+                    <h4>Gross Income</h4>
+                    <div class="breakdown-item">
+                      <span>Gross Pay</span>
+                      <span id="grossPay">$0.00</span>
+                    </div>
                   </div>
-                  <div class="breakdown-item taxable">
-                    <span>Taxable Income</span>
-                    <span id="taxableIncome">$0.00</span>
-                  </div>
-                </div>
 
-                <div class="breakdown-section">
-                  <h4>Federal Taxes</h4>
-                  <div class="breakdown-item">
-                    <span>Federal Income Tax</span>
-                    <span id="federalTax">$0.00</span>
+                  <div class="breakdown-section">
+                    <h4>Pre-Tax Deductions</h4>
+                    <div class="breakdown-item">
+                      <span>Pre-Tax Benefits (health, FSA)</span>
+                      <span id="preTaxBenefitsAmount">$0.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                      <span>Retirement Contributions (401k, 403b)</span>
+                      <span id="retirementContributionsAmount">$0.00</span>
+                    </div>
+                    <div class="breakdown-item taxable">
+                      <span>Taxable Income</span>
+                      <span id="taxableIncome">$0.00</span>
+                    </div>
                   </div>
-                  <div class="breakdown-item">
-                    <span>Social Security (6.2%)</span>
-                    <span id="socialSecurity">$0.00</span>
-                  </div>
-                  <div class="breakdown-item">
-                    <span>Medicare (1.45%)</span>
-                    <span id="medicare">$0.00</span>
-                  </div>
-                </div>
 
-                <div class="breakdown-section">
-                  <h4>State & Local Taxes</h4>
-                  <div class="breakdown-item">
-                    <span>PA State Income Tax (3.07%)</span>
-                    <span id="stateTax">$0.00</span>
+                  <div class="breakdown-section">
+                    <h4>Federal Taxes</h4>
+                    <div class="breakdown-item">
+                      <span>Federal Income Tax</span>
+                      <span id="federalTax">$0.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                      <span>Social Security (6.2%)</span>
+                      <span id="socialSecurity">$0.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                      <span>Medicare (1.45%)</span>
+                      <span id="medicare">$0.00</span>
+                    </div>
                   </div>
-                  <div class="breakdown-item" id="localTaxRow">
-                    <span>Local Tax</span>
-                    <span id="localTaxAmount">$0.00</span>
-                  </div>
-                </div>
 
-                <div class="breakdown-section">
-                  <h4>Post-Tax Deductions</h4>
-                  <div class="breakdown-item">
-                    <span>Post-Tax Deductions</span>
-                    <span id="postTaxAmount">$0.00</span>
+                  <div class="breakdown-section">
+                    <h4>State &amp; Local Taxes</h4>
+                    <div class="breakdown-item">
+                      <span>PA State Income Tax (3.07%)</span>
+                      <span id="stateTax">$0.00</span>
+                    </div>
+                    <div class="breakdown-item" id="localTaxRow">
+                      <span>Local Tax</span>
+                      <span id="localTaxAmount">$0.00</span>
+                    </div>
+                  </div>
+
+                  <div class="breakdown-section">
+                    <h4>Post-Tax Deductions</h4>
+                    <div class="breakdown-item">
+                      <span>Post-Tax Deductions</span>
+                      <span id="postTaxAmount">$0.00</span>
+                    </div>
                   </div>
                 </div>
 
@@ -312,9 +272,10 @@
                     <span>Total Deductions</span>
                     <span id="totalDeductions">$0.00</span>
                   </div>
+                  <!-- #9 + #13: Effective rate replaces the redundant net-pay repeat -->
                   <div class="summary-item net">
-                    <span>Net Take-Home Pay</span>
-                    <span id="finalNetPay">$0.00</span>
+                    <span>Effective Tax Rate</span>
+                    <span id="effectiveTaxRate">0.0%</span>
                   </div>
                 </div>
               </div>
