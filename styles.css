@@ -284,6 +284,19 @@ header p {
   font-weight: 500;
 }
 
+.net-pay.negative {
+  border-color: rgba(255, 107, 107, 0.5);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 107, 107, 0.1) 0%,
+    rgba(200, 50, 50, 0.1) 100%
+  );
+}
+
+.net-pay.negative .net-pay-amount {
+  color: #ff6b6b;
+}
+
 /* Breakdown styling */
 .breakdown {
   background: rgba(255, 255, 255, 0.03);

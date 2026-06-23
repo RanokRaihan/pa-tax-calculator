@@ -180,16 +180,29 @@
                 <h3>Deductions (Optional)</h3>
 
                 <div class="form-group">
-                  <label for="preTaxDeductions">Pre-Tax Deductions ($)</label>
+                  <label for="preTaxBenefits">Pre-Tax Benefits ($)</label>
                   <input
                     type="number"
-                    id="preTaxDeductions"
-                    name="preTaxDeductions"
+                    id="preTaxBenefits"
+                    name="preTaxBenefits"
                     step="0.01"
                     min="0"
                     placeholder="0.00"
                   />
-                  <small>401k, health insurance, etc.</small>
+                  <small>Health/dental/vision, FSA — reduces income tax &amp; FICA</small>
+                </div>
+
+                <div class="form-group">
+                  <label for="retirementContributions">Retirement Contributions ($)</label>
+                  <input
+                    type="number"
+                    id="retirementContributions"
+                    name="retirementContributions"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                  />
+                  <small>401k, 403b — reduces income tax only, not FICA</small>
                 </div>
 
                 <div class="form-group">
@@ -246,6 +259,9 @@
                   <span id="netPay">0.00</span>
                 </div>
                 <div class="pay-period" id="payPeriodLabel">per paycheck</div>
+                <div id="negativePayWarning" style="display:none; color:#ff6b6b; font-size:0.85rem; margin-top:0.5rem;">
+                  ⚠ Deductions exceed gross pay. Check your entries.
+                </div>
               </div>
 
               <div class="breakdown">
@@ -262,8 +278,12 @@
                 <div class="breakdown-section">
                   <h4>Pre-Tax Deductions</h4>
                   <div class="breakdown-item">
-                    <span>Pre-Tax Deductions</span>
-                    <span id="preTaxAmount">$0.00</span>
+                    <span>Pre-Tax Benefits (health, FSA)</span>
+                    <span id="preTaxBenefitsAmount">$0.00</span>
+                  </div>
+                  <div class="breakdown-item">
+                    <span>Retirement Contributions (401k, 403b)</span>
+                    <span id="retirementContributionsAmount">$0.00</span>
                   </div>
                   <div class="breakdown-item taxable">
                     <span>Taxable Income</span>

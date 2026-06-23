@@ -58,13 +58,25 @@ A modern, responsive web application for calculating take-home pay with detailed
 
 ### Federal Tax Brackets (2024)
 
-- 10% on income up to $11,000
-- 12% on income $11,001 to $44,725
-- 22% on income $44,726 to $95,375
-- 24% on income $95,376 to $182,050
-- 32% on income $182,051 to $231,250
-- 35% on income $231,251 to $578,125
-- 37% on income over $578,125
+Single filers:
+
+- 10% on income up to $11,600
+- 12% on income $11,601 to $47,150
+- 22% on income $47,151 to $100,525
+- 24% on income $100,526 to $191,950
+- 32% on income $191,951 to $243,725
+- 35% on income $243,726 to $609,350
+- 37% on income over $609,350
+
+Married filing jointly:
+
+- 10% on income up to $23,200
+- 12% on income $23,201 to $94,300
+- 22% on income $94,301 to $201,050
+- 24% on income $201,051 to $383,900
+- 32% on income $383,901 to $487,450
+- 35% on income $487,451 to $731,200
+- 37% on income over $731,200
 
 ## File Structure
 
@@ -121,7 +133,7 @@ pa-tax-calculator/
 ## Keyboard Shortcuts
 
 - **Ctrl/Cmd + Enter**: Calculate taxes
-- **Ctrl/Cmd + R**: Reset calculator
+- **Escape**: Reset calculator
 
 ## Disclaimer
 

@@ -2,14 +2,26 @@
 
 class TaxCalculator {
   constructor() {
-    this.federalTaxBrackets2024 = [
-      { min: 0, max: 11000, rate: 0.1 },
-      { min: 11000, max: 44725, rate: 0.12 },
-      { min: 44725, max: 95375, rate: 0.22 },
-      { min: 95375, max: 182050, rate: 0.24 },
-      { min: 182050, max: 231250, rate: 0.32 },
-      { min: 231250, max: 578125, rate: 0.35 },
-      { min: 578125, max: Infinity, rate: 0.37 },
+    // 2024 Federal Tax Brackets — Single / Married Filing Separately
+    this.federalBracketsSingle = [
+      { min: 0,      max: 11600,   rate: 0.10 },
+      { min: 11600,  max: 47150,   rate: 0.12 },
+      { min: 47150,  max: 100525,  rate: 0.22 },
+      { min: 100525, max: 191950,  rate: 0.24 },
+      { min: 191950, max: 243725,  rate: 0.32 },
+      { min: 243725, max: 609350,  rate: 0.35 },
+      { min: 609350, max: Infinity, rate: 0.37 },
+    ];
+
+    // 2024 Federal Tax Brackets — Married Filing Jointly
+    this.federalBracketsMarried = [
+      { min: 0,      max: 23200,   rate: 0.10 },
+      { min: 23200,  max: 94300,   rate: 0.12 },
+      { min: 94300,  max: 201050,  rate: 0.22 },
+      { min: 201050, max: 383900,  rate: 0.24 },
+      { min: 383900, max: 487450,  rate: 0.32 },
+      { min: 487450, max: 731200,  rate: 0.35 },
+      { min: 731200, max: Infinity, rate: 0.37 },
     ];
 
     this.payFrequencyMultipliers = {
@@ -22,8 +34,13 @@ class TaxCalculator {
 
     this.socialSecurityRate = 0.062;
     this.medicareRate = 0.0145;
+    // ACA Additional Medicare Tax: 0.9% on wages above the threshold
+    this.additionalMedicareRate = 0.009;
+    this.additionalMedicareSingleThreshold = 200000;
+    this.additionalMedicareMarriedThreshold = 250000;
+
     this.paStateRate = 0.0307;
-    this.socialSecurityWageBase = 160200; // 2024 limit
+    this.socialSecurityWageBase = 168600; // 2024
 
     // 2024 Standard Deductions
     this.standardDeductions = {
@@ -77,7 +94,6 @@ class TaxCalculator {
     this.init();
   }
 
-  // localStorage functions for hourly rate
   saveHourlyRate(rate) {
     try {
       localStorage.setItem("paCalc_hourlyRate", rate.toString());
@@ -89,14 +105,10 @@ class TaxCalculator {
 
   showSaveIndicator() {
     const hourlyRateInput = document.getElementById("hourlyRate");
-    const originalBorder = hourlyRateInput.style.border;
-
-    // Briefly flash green border to indicate save
     hourlyRateInput.style.border = "2px solid #4CAF50";
-    hourlyRateInput.style.transition = "border 0.3s ease";
-
     setTimeout(() => {
-      hourlyRateInput.style.border = originalBorder;
+      hourlyRateInput.style.border = "";
+      hourlyRateInput.style.transition = "";
     }, 600);
   }
 
@@ -114,16 +126,14 @@ class TaxCalculator {
     this.bindEvents();
     this.loadSavedData();
     this.showRandomTip();
-    this.togglePayInputs(); // Set initial state
+    this.togglePayInputs();
+    this.toggleAnnuallyOption();
   }
 
   loadSavedData() {
-    // Load saved hourly rate and set as default value
     const savedHourlyRate = this.loadHourlyRate();
     if (savedHourlyRate !== null && savedHourlyRate > 0) {
-      const hourlyRateInput = document.getElementById("hourlyRate");
-      hourlyRateInput.value = savedHourlyRate.toFixed(2);
-      console.log(`Loaded saved hourly rate: $${savedHourlyRate.toFixed(2)}`);
+      document.getElementById("hourlyRate").value = savedHourlyRate.toFixed(2);
     }
   }
 
@@ -140,25 +150,23 @@ class TaxCalculator {
     payTypeInputs.forEach((input) => {
       input.addEventListener("change", () => {
         this.togglePayInputs();
+        this.toggleAnnuallyOption();
       });
     });
 
-    // Save hourly rate to localStorage when user changes it
     let saveTimeout;
     hourlyRateInput.addEventListener("input", (e) => {
-      // Debounce the save to avoid excessive localStorage writes
       clearTimeout(saveTimeout);
       saveTimeout = setTimeout(() => {
         const rate = parseFloat(e.target.value);
         if (!isNaN(rate) && rate > 0) {
           this.saveHourlyRate(rate);
         }
-      }, 500); // Wait 500ms after user stops typing
+      }, 500);
     });
 
-    // Also save immediately when the user leaves the input field
     hourlyRateInput.addEventListener("blur", (e) => {
-      clearTimeout(saveTimeout); // Cancel debounced save
+      clearTimeout(saveTimeout);
       const rate = parseFloat(e.target.value);
       if (!isNaN(rate) && rate > 0) {
         this.saveHourlyRate(rate);
@@ -166,12 +174,27 @@ class TaxCalculator {
     });
   }
 
+  // Disable the "Annually" pay frequency option when Hourly pay type is selected,
+  // since combining them produces a nonsensical annual income of one period's hours.
+  toggleAnnuallyOption() {
+    const payType = document.querySelector('input[name="payType"]:checked').value;
+    const payFrequencySelect = document.getElementById("payFrequency");
+    const annuallyOption = payFrequencySelect.querySelector('option[value="annually"]');
+
+    if (payType === "hourly") {
+      annuallyOption.disabled = true;
+      if (payFrequencySelect.value === "annually") {
+        payFrequencySelect.value = "biweekly";
+      }
+    } else {
+      annuallyOption.disabled = false;
+    }
+  }
+
   togglePayInputs() {
     const hourlyInputs = document.getElementById("hourlyInputs");
     const salaryInputs = document.getElementById("salaryInputs");
-    const payType = document.querySelector(
-      'input[name="payType"]:checked'
-    ).value;
+    const payType = document.querySelector('input[name="payType"]:checked').value;
 
     if (payType === "hourly") {
       hourlyInputs.classList.remove("hidden");
@@ -186,11 +209,10 @@ class TaxCalculator {
     const tipContent = document.getElementById("tipContent");
     const randomTip =
       this.financialTips[Math.floor(Math.random() * this.financialTips.length)];
-
     tipContent.innerHTML = `
-            <p>${randomTip.tip}</p>
-            <span class="tip-category">${randomTip.category}</span>
-        `;
+      <p>${randomTip.tip}</p>
+      <span class="tip-category">${randomTip.category}</span>
+    `;
   }
 
   calculateTaxes() {
@@ -200,18 +222,21 @@ class TaxCalculator {
       this.displayResults(calculations, formData.payFrequency);
     } catch (error) {
       console.error("Calculation error:", error);
-      alert("Please check your input values and try again.");
+      alert(error.message || "Please check your input values and try again.");
     }
   }
 
   getFormData() {
     const payFrequency = document.getElementById("payFrequency").value;
     const filingStatus = document.getElementById("filingStatus").value;
-    const payType = document.querySelector(
-      'input[name="payType"]:checked'
-    ).value;
-    const preTaxDeductions =
-      parseFloat(document.getElementById("preTaxDeductions").value) || 0;
+    const payType = document.querySelector('input[name="payType"]:checked').value;
+
+    // Section 125 benefits (health/dental/vision, FSA) reduce both income tax and FICA
+    const preTaxBenefits =
+      parseFloat(document.getElementById("preTaxBenefits").value) || 0;
+    // Retirement contributions (401k, 403b) reduce income tax only — not FICA
+    const retirementContributions =
+      parseFloat(document.getElementById("retirementContributions").value) || 0;
     const postTaxDeductions =
       parseFloat(document.getElementById("postTaxDeductions").value) || 0;
     const localTaxRate =
@@ -227,19 +252,23 @@ class TaxCalculator {
       const overtimeHours =
         parseFloat(document.getElementById("overtimeHours").value) || 0;
 
-      if (hourlyRate <= 0 || regularHours < 0 || overtimeHours < 0) {
-        throw new Error("Invalid hourly input values");
+      if (hourlyRate <= 0) {
+        throw new Error("Please enter a valid hourly rate.");
+      }
+      if (regularHours < 0 || overtimeHours < 0) {
+        throw new Error("Hours cannot be negative.");
+      }
+      if (regularHours === 0 && overtimeHours === 0) {
+        throw new Error("Please enter regular or overtime hours.");
       }
 
       grossPay = hourlyRate * regularHours + hourlyRate * 1.5 * overtimeHours;
     } else {
       const annualSalary =
         parseFloat(document.getElementById("annualSalary").value) || 0;
-
       if (annualSalary <= 0) {
-        throw new Error("Invalid salary input");
+        throw new Error("Please enter a valid annual salary.");
       }
-
       grossPay = annualSalary / this.payFrequencyMultipliers[payFrequency];
     }
 
@@ -248,7 +277,8 @@ class TaxCalculator {
       filingStatus,
       payType,
       grossPay,
-      preTaxDeductions,
+      preTaxBenefits,
+      retirementContributions,
       postTaxDeductions,
       localTaxRate,
     };
@@ -257,70 +287,80 @@ class TaxCalculator {
   performCalculations(data) {
     const {
       grossPay,
-      preTaxDeductions,
+      preTaxBenefits,
+      retirementContributions,
       postTaxDeductions,
       localTaxRate,
       payFrequency,
       filingStatus,
     } = data;
 
-    // Calculate annual equivalent for tax calculations
-    const annualGross = grossPay * this.payFrequencyMultipliers[payFrequency];
-    const annualPreTax =
-      preTaxDeductions * this.payFrequencyMultipliers[payFrequency];
+    const multiplier = this.payFrequencyMultipliers[payFrequency];
+    const annualGross = grossPay * multiplier;
 
-    // Taxable income after pre-tax deductions
-    const annualTaxableIncome = Math.max(0, annualGross - annualPreTax);
+    // Section 125 benefits reduce both income tax wages and FICA wages
+    const annualPreTaxBenefits = preTaxBenefits * multiplier;
+    // Retirement contributions reduce income tax wages but not FICA wages
+    const annualRetirement = retirementContributions * multiplier;
 
-    // Federal taxable income after standard deduction
+    // FICA wages: only Section 125 deductions reduce the base
+    const annualFicaWages = Math.max(0, annualGross - annualPreTaxBenefits);
+
+    // Income tax wages: both deduction types reduce the base
+    const annualTaxableIncome = Math.max(
+      0,
+      annualGross - annualPreTaxBenefits - annualRetirement
+    );
+
+    // Federal taxable income: further reduced by the filing-status standard deduction
     const standardDeduction = this.standardDeductions[filingStatus];
     const federalTaxableIncome = Math.max(
       0,
       annualTaxableIncome - standardDeduction
     );
 
-    const taxableIncome =
-      annualTaxableIncome / this.payFrequencyMultipliers[payFrequency];
+    // Per-period taxable income (for display only)
+    const taxableIncomePerPeriod = annualTaxableIncome / multiplier;
 
-    // Federal income tax calculation (using income after standard deduction)
+    // Federal income tax — use brackets matched to filing status
+    const brackets =
+      filingStatus === "married"
+        ? this.federalBracketsMarried
+        : this.federalBracketsSingle;
     const federalTax =
-      this.calculateFederalTax(federalTaxableIncome) /
-      this.payFrequencyMultipliers[payFrequency];
+      this.calculateFederalTax(federalTaxableIncome, brackets) / multiplier;
 
-    // FICA taxes (Social Security + Medicare)
-    const socialSecurityWages = Math.min(
-      annualTaxableIncome,
-      this.socialSecurityWageBase
-    );
-    const socialSecurity =
-      (socialSecurityWages * this.socialSecurityRate) /
-      this.payFrequencyMultipliers[payFrequency];
-    const medicare =
-      (annualTaxableIncome * this.medicareRate) /
-      this.payFrequencyMultipliers[payFrequency];
+    // Social Security: 6.2% on FICA wages up to the annual wage base
+    const socialSecurityWages = Math.min(annualFicaWages, this.socialSecurityWageBase);
+    const socialSecurity = (socialSecurityWages * this.socialSecurityRate) / multiplier;
 
-    // Pennsylvania state tax (flat rate)
-    const stateTax =
-      (annualTaxableIncome * this.paStateRate) /
-      this.payFrequencyMultipliers[payFrequency];
+    // Medicare: 1.45% on all FICA wages + 0.9% Additional Medicare Tax on high earners
+    const additionalMedicareThreshold =
+      filingStatus === "married"
+        ? this.additionalMedicareMarriedThreshold
+        : this.additionalMedicareSingleThreshold;
+    const excessWages = Math.max(0, annualFicaWages - additionalMedicareThreshold);
+    const annualMedicare =
+      annualFicaWages * this.medicareRate +
+      excessWages * this.additionalMedicareRate;
+    const medicare = annualMedicare / multiplier;
 
-    // Local tax
-    const localTax =
-      (annualTaxableIncome * localTaxRate) /
-      this.payFrequencyMultipliers[payFrequency];
+    // PA state income tax: flat 3.07% on income-taxable wages
+    const stateTax = (annualTaxableIncome * this.paStateRate) / multiplier;
 
-    // Total deductions
-    const totalTaxes =
-      federalTax + socialSecurity + medicare + stateTax + localTax;
-    const totalDeductions = preTaxDeductions + totalTaxes + postTaxDeductions;
+    // Local/municipal earned income tax: assessed on gross wages (PA EIT standard)
+    const localTax = (annualGross * localTaxRate) / multiplier;
 
-    // Net pay
+    const totalTaxes = federalTax + socialSecurity + medicare + stateTax + localTax;
+    const totalPreTax = preTaxBenefits + retirementContributions;
+    const totalDeductions = totalPreTax + totalTaxes + postTaxDeductions;
     const netPay = grossPay - totalDeductions;
 
     return {
       grossPay,
-      preTaxDeductions,
-      taxableIncome,
+      preTaxBenefits,
+      retirementContributions,
+      taxableIncomePerPeriod,
       federalTax,
       socialSecurity,
       medicare,
@@ -332,24 +372,18 @@ class TaxCalculator {
     };
   }
 
-  calculateFederalTax(annualIncome) {
+  calculateFederalTax(annualIncome, brackets) {
     let tax = 0;
     let processedIncome = 0;
 
-    for (const bracket of this.federalTaxBrackets2024) {
+    for (const bracket of brackets) {
       if (annualIncome <= processedIncome) break;
-
-      // Calculate the income that falls within this bracket
       const incomeInThisBracket = Math.min(
         annualIncome - processedIncome,
         bracket.max - bracket.min
       );
-
-      // Only tax the portion that falls within this bracket
       tax += incomeInThisBracket * bracket.rate;
       processedIncome += incomeInThisBracket;
-
-      // If we've processed all income, we're done
       if (processedIncome >= annualIncome) break;
     }
 
@@ -357,11 +391,9 @@ class TaxCalculator {
   }
 
   displayResults(calculations, payFrequency) {
-    // Hide tips and show results
     document.getElementById("financialTips").style.display = "none";
     document.getElementById("calculationResults").classList.remove("hidden");
 
-    // Update pay period label
     const payPeriodLabels = {
       weekly: "per week",
       biweekly: "per paycheck (biweekly)",
@@ -369,71 +401,55 @@ class TaxCalculator {
       monthly: "per month",
       annually: "per year",
     };
-
     document.getElementById("payPeriodLabel").textContent =
       payPeriodLabels[payFrequency];
 
-    // Main net pay display
-    document.getElementById("netPay").textContent =
-      calculations.netPay.toFixed(2);
-
-    // Breakdown details
-    document.getElementById(
-      "grossPay"
-    ).textContent = `$${calculations.grossPay.toFixed(2)}`;
-    document.getElementById(
-      "preTaxAmount"
-    ).textContent = `$${calculations.preTaxDeductions.toFixed(2)}`;
-    document.getElementById(
-      "taxableIncome"
-    ).textContent = `$${calculations.taxableIncome.toFixed(2)}`;
-    document.getElementById(
-      "federalTax"
-    ).textContent = `$${calculations.federalTax.toFixed(2)}`;
-    document.getElementById(
-      "socialSecurity"
-    ).textContent = `$${calculations.socialSecurity.toFixed(2)}`;
-    document.getElementById(
-      "medicare"
-    ).textContent = `$${calculations.medicare.toFixed(2)}`;
-    document.getElementById(
-      "stateTax"
-    ).textContent = `$${calculations.stateTax.toFixed(2)}`;
-    document.getElementById(
-      "localTaxAmount"
-    ).textContent = `$${calculations.localTax.toFixed(2)}`;
-    document.getElementById(
-      "postTaxAmount"
-    ).textContent = `$${calculations.postTaxDeductions.toFixed(2)}`;
-    document.getElementById(
-      "totalDeductions"
-    ).textContent = `$${calculations.totalDeductions.toFixed(2)}`;
-    document.getElementById(
-      "finalNetPay"
-    ).textContent = `$${calculations.netPay.toFixed(2)}`;
-
-    // Hide local tax row if no local tax
-    const localTaxRow = document.getElementById("localTaxRow");
-    if (calculations.localTax === 0) {
-      localTaxRow.style.display = "none";
+    // Net pay — flag negative results
+    const netPayEl = document.getElementById("netPay");
+    netPayEl.textContent = calculations.netPay.toFixed(2);
+    const netPayContainer = document.querySelector(".net-pay");
+    const negativeWarning = document.getElementById("negativePayWarning");
+    if (calculations.netPay < 0) {
+      netPayContainer.classList.add("negative");
+      negativeWarning.style.display = "block";
     } else {
-      localTaxRow.style.display = "flex";
+      netPayContainer.classList.remove("negative");
+      negativeWarning.style.display = "none";
     }
 
-    // Smooth scroll to results
+    // Breakdown
+    document.getElementById("grossPay").textContent =
+      `$${calculations.grossPay.toFixed(2)}`;
+    document.getElementById("preTaxBenefitsAmount").textContent =
+      `$${calculations.preTaxBenefits.toFixed(2)}`;
+    document.getElementById("retirementContributionsAmount").textContent =
+      `$${calculations.retirementContributions.toFixed(2)}`;
+    document.getElementById("taxableIncome").textContent =
+      `$${calculations.taxableIncomePerPeriod.toFixed(2)}`;
+    document.getElementById("federalTax").textContent =
+      `$${calculations.federalTax.toFixed(2)}`;
+    document.getElementById("socialSecurity").textContent =
+      `$${calculations.socialSecurity.toFixed(2)}`;
+    document.getElementById("medicare").textContent =
+      `$${calculations.medicare.toFixed(2)}`;
+    document.getElementById("stateTax").textContent =
+      `$${calculations.stateTax.toFixed(2)}`;
+    document.getElementById("localTaxAmount").textContent =
+      `$${calculations.localTax.toFixed(2)}`;
+    document.getElementById("postTaxAmount").textContent =
+      `$${calculations.postTaxDeductions.toFixed(2)}`;
+    document.getElementById("totalDeductions").textContent =
+      `$${calculations.totalDeductions.toFixed(2)}`;
+    document.getElementById("finalNetPay").textContent =
+      `$${calculations.netPay.toFixed(2)}`;
+
+    const localTaxRow = document.getElementById("localTaxRow");
+    localTaxRow.style.display = calculations.localTax === 0 ? "none" : "flex";
+
     document.getElementById("calculationResults").scrollIntoView({
       behavior: "smooth",
       block: "start",
     });
-  }
-
-  // Utility method to format currency
-  formatCurrency(amount) {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-    }).format(amount);
   }
 }
 
@@ -442,44 +458,30 @@ document.addEventListener("DOMContentLoaded", () => {
   new TaxCalculator();
 });
 
-// Add some additional utility functions
 function resetCalculator() {
   document.getElementById("financialTips").style.display = "block";
   document.getElementById("calculationResults").classList.add("hidden");
   document.getElementById("taxCalculatorForm").reset();
+
+  // Restore saved hourly rate — form.reset() clears the field
+  try {
+    const savedRate = parseFloat(localStorage.getItem("paCalc_hourlyRate"));
+    if (!isNaN(savedRate) && savedRate > 0) {
+      document.getElementById("hourlyRate").value = savedRate.toFixed(2);
+    }
+  } catch (_) {}
 }
 
-// Add keyboard shortcuts
+// Keyboard shortcuts
 document.addEventListener("keydown", (e) => {
-  if (e.ctrlKey || e.metaKey) {
-    switch (e.key) {
-      case "Enter":
-        e.preventDefault();
-        document
-          .getElementById("taxCalculatorForm")
-          .dispatchEvent(new Event("submit"));
-        break;
-      case "r":
-        e.preventDefault();
-        resetCalculator();
-        break;
-    }
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+    e.preventDefault();
+    document
+      .getElementById("taxCalculatorForm")
+      .dispatchEvent(new Event("submit"));
+  }
+  // Escape resets the calculator (avoids conflicting with Ctrl+R browser refresh)
+  if (e.key === "Escape") {
+    resetCalculator();
   }
 });
-
-// Add form validation helpers
-function validatePositiveNumber(value, fieldName) {
-  const num = parseFloat(value);
-  if (isNaN(num) || num < 0) {
-    throw new Error(`${fieldName} must be a positive number`);
-  }
-  return num;
-}
-
-function validatePercentage(value, fieldName) {
-  const num = parseFloat(value);
-  if (isNaN(num) || num < 0 || num > 100) {
-    throw new Error(`${fieldName} must be between 0 and 100`);
-  }
-  return num / 100;
-}
