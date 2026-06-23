@@ -1,6 +1,8 @@
-/* Reserve scrollbar space so the page never shifts when it appears */
 html {
+  overflow-y: auto;
   scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: #667eea transparent;
 }
 
 /* Reset and base styles */
@@ -850,22 +852,3 @@ input[type="number"] {
   }
 }
 
-/* ─── Scrollbar ─── */
-
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-}
