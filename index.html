@@ -90,7 +90,7 @@
               <div id="hourlyInputs" class="pay-inputs">
                 <div class="form-group">
                   <label for="hourlyRate">Hourly Rate ($)</label>
-                  <input type="number" id="hourlyRate" name="hourlyRate" step="0.01" min="0" placeholder="25.00" />
+                  <input type="number" id="hourlyRate" name="hourlyRate" step="0.01" min="0.01" placeholder="25.00" />
                 </div>
                 <div class="form-group">
                   <label for="regularHours">Regular Hours</label>
@@ -149,7 +149,7 @@
 
               <!-- #4: Keyboard shortcut discovery -->
               <p class="keyboard-hints">
-                <kbd>⌘ Enter</kbd> to calculate &nbsp;·&nbsp; <kbd>Esc</kbd> to reset
+                <kbd>Ctrl/⌘ Enter</kbd> to calculate &nbsp;·&nbsp; <kbd>Esc</kbd> to reset
               </p>
             </form>
           </div>
@@ -189,70 +189,81 @@
               </div>
 
               <div class="breakdown">
-                <!-- #8: Annual / per-period toggle -->
                 <div class="breakdown-header">
-                  <h3>Detailed Breakdown</h3>
+                  <button type="button" class="breakdown-toggle" id="breakdownToggle"
+                    aria-expanded="false" aria-controls="breakdownSections">
+                    <span class="breakdown-toggle-label">
+                      <span>Detailed Breakdown</span>
+                      <span class="expand-hint">Click to see line-by-line details</span>
+                    </span>
+                    <svg class="breakdown-chevron" width="16" height="16" viewBox="0 0 16 16"
+                      fill="none" aria-hidden="true">
+                      <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
                   <button type="button" class="period-toggle-btn" id="periodToggleBtn">Show Annual</button>
                 </div>
 
-                <div class="breakdown-section">
-                  <h4>Gross Income</h4>
-                  <div class="breakdown-item">
-                    <span>Gross Pay</span>
-                    <span id="grossPay">$0.00</span>
+                <div id="breakdownSections" class="breakdown-sections collapsed">
+                  <div class="breakdown-section">
+                    <h4>Gross Income</h4>
+                    <div class="breakdown-item">
+                      <span>Gross Pay</span>
+                      <span id="grossPay">$0.00</span>
+                    </div>
                   </div>
-                </div>
 
-                <div class="breakdown-section">
-                  <h4>Pre-Tax Deductions</h4>
-                  <div class="breakdown-item">
-                    <span>Pre-Tax Benefits (health, FSA)</span>
-                    <span id="preTaxBenefitsAmount">$0.00</span>
+                  <div class="breakdown-section">
+                    <h4>Pre-Tax Deductions</h4>
+                    <div class="breakdown-item">
+                      <span>Pre-Tax Benefits (health, FSA)</span>
+                      <span id="preTaxBenefitsAmount">$0.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                      <span>Retirement Contributions (401k, 403b)</span>
+                      <span id="retirementContributionsAmount">$0.00</span>
+                    </div>
+                    <div class="breakdown-item taxable">
+                      <span>Taxable Income</span>
+                      <span id="taxableIncome">$0.00</span>
+                    </div>
                   </div>
-                  <div class="breakdown-item">
-                    <span>Retirement Contributions (401k, 403b)</span>
-                    <span id="retirementContributionsAmount">$0.00</span>
-                  </div>
-                  <div class="breakdown-item taxable">
-                    <span>Taxable Income</span>
-                    <span id="taxableIncome">$0.00</span>
-                  </div>
-                </div>
 
-                <div class="breakdown-section">
-                  <h4>Federal Taxes</h4>
-                  <div class="breakdown-item">
-                    <span>Federal Income Tax</span>
-                    <span id="federalTax">$0.00</span>
+                  <div class="breakdown-section">
+                    <h4>Federal Taxes</h4>
+                    <div class="breakdown-item">
+                      <span>Federal Income Tax</span>
+                      <span id="federalTax">$0.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                      <span>Social Security (6.2%)</span>
+                      <span id="socialSecurity">$0.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                      <span>Medicare (1.45%)</span>
+                      <span id="medicare">$0.00</span>
+                    </div>
                   </div>
-                  <div class="breakdown-item">
-                    <span>Social Security (6.2%)</span>
-                    <span id="socialSecurity">$0.00</span>
-                  </div>
-                  <div class="breakdown-item">
-                    <span>Medicare (1.45%)</span>
-                    <span id="medicare">$0.00</span>
-                  </div>
-                </div>
 
-                <div class="breakdown-section">
-                  <h4>State &amp; Local Taxes</h4>
-                  <div class="breakdown-item">
-                    <span>PA State Income Tax (3.07%)</span>
-                    <span id="stateTax">$0.00</span>
+                  <div class="breakdown-section">
+                    <h4>State &amp; Local Taxes</h4>
+                    <div class="breakdown-item">
+                      <span>PA State Income Tax (3.07%)</span>
+                      <span id="stateTax">$0.00</span>
+                    </div>
+                    <div class="breakdown-item" id="localTaxRow">
+                      <span>Local Tax</span>
+                      <span id="localTaxAmount">$0.00</span>
+                    </div>
                   </div>
-                  <!-- #12: Always visible — no conditional hiding -->
-                  <div class="breakdown-item" id="localTaxRow">
-                    <span>Local Tax</span>
-                    <span id="localTaxAmount">$0.00</span>
-                  </div>
-                </div>
 
-                <div class="breakdown-section">
-                  <h4>Post-Tax Deductions</h4>
-                  <div class="breakdown-item">
-                    <span>Post-Tax Deductions</span>
-                    <span id="postTaxAmount">$0.00</span>
+                  <div class="breakdown-section">
+                    <h4>Post-Tax Deductions</h4>
+                    <div class="breakdown-item">
+                      <span>Post-Tax Deductions</span>
+                      <span id="postTaxAmount">$0.00</span>
+                    </div>
                   </div>
                 </div>
 

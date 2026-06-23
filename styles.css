@@ -1,3 +1,8 @@
+/* Reserve scrollbar space so the page never shifts when it appears */
+html {
+  scrollbar-gutter: stable;
+}
+
 /* Reset and base styles */
 * {
   margin: 0;
@@ -288,7 +293,7 @@ input[type="number"] {
 }
 
 .deductions-section.open .deductions-body {
-  max-height: 700px;
+  max-height: 1200px;
   opacity: 1;
 }
 
@@ -530,11 +535,65 @@ input[type="number"] {
   margin-bottom: 25px;
 }
 
-.breakdown h3 {
+.breakdown-toggle {
+  background: none;
+  border: none;
   color: #ffffff;
   font-family: "Poppins", sans-serif;
   font-size: 1.3rem;
-  margin-bottom: 0;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+}
+
+.breakdown-toggle-label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.expand-hint {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: #808080;
+  letter-spacing: 0;
+}
+
+.breakdown-toggle[aria-expanded="true"] .expand-hint {
+  display: none;
+}
+
+.breakdown-toggle:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.breakdown-chevron {
+  color: #a0a0a0;
+  flex-shrink: 0;
+  transition: transform 0.3s ease, color 0.2s ease;
+}
+
+.breakdown-toggle[aria-expanded="true"] .breakdown-chevron {
+  transform: rotate(180deg);
+  color: #a78bfa;
+}
+
+.breakdown-sections {
+  overflow: hidden;
+  max-height: 2000px;
+  opacity: 1;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+}
+
+.breakdown-sections.collapsed {
+  max-height: 0;
+  opacity: 0;
 }
 
 /* #8: period toggle button */

@@ -156,6 +156,9 @@ class TaxCalculator {
     // #19: deductions accordion
     document.getElementById("deductionsToggle").addEventListener("click", () => this.toggleDeductions());
 
+    // breakdown collapse toggle
+    document.getElementById("breakdownToggle").addEventListener("click", () => this.toggleBreakdown());
+
     // #14: mobile tab buttons
     document.querySelectorAll(".tab-btn").forEach((btn) => {
       btn.addEventListener("click", () => this.switchTab(btn.dataset.tab));
@@ -212,6 +215,14 @@ class TaxCalculator {
     document.querySelectorAll(".tab-btn").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.tab === tab);
     });
+  }
+
+  // breakdown collapse
+  toggleBreakdown() {
+    const sections = document.getElementById("breakdownSections");
+    const toggle = document.getElementById("breakdownToggle");
+    const isNowCollapsed = sections.classList.toggle("collapsed");
+    toggle.setAttribute("aria-expanded", String(!isNowCollapsed));
   }
 
   // #19: deductions accordion
@@ -355,8 +366,9 @@ class TaxCalculator {
     const annualMedicare = annualFicaWages * this.medicareRate + excessWages * this.additionalMedicareRate;
     const medicare = annualMedicare / multiplier;
 
-    // PA state income tax: 3.07% flat
-    const stateTax = (annualTaxableIncome * this.paStateRate) / multiplier;
+    // PA state income tax: 3.07% flat — PA does not allow a 401(k) deduction,
+    // so the base is annualFicaWages (gross minus Section 125 only), not annualTaxableIncome.
+    const stateTax = (annualFicaWages * this.paStateRate) / multiplier;
 
     // Local EIT: assessed on gross wages (PA standard)
     const localTax = (annualGross * localTaxRate) / multiplier;
@@ -484,9 +496,12 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("keydown", (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
     e.preventDefault();
-    document.getElementById("taxCalculatorForm").dispatchEvent(new Event("submit"));
+    document.getElementById("taxCalculatorForm").requestSubmit();
   }
   if (e.key === "Escape" && calculatorInstance) {
-    calculatorInstance.reset();
+    const tag = document.activeElement?.tagName;
+    if (tag !== "INPUT" && tag !== "SELECT" && tag !== "TEXTAREA") {
+      calculatorInstance.reset();
+    }
   }
 });
