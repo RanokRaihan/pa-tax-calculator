@@ -13,7 +13,8 @@ body {
   font-family: "Nunito", sans-serif;
 }
 
-/* Container and layout */
+/* ─── Container and layout ─── */
+
 .container {
   max-width: 1400px;
   margin: 0 auto;
@@ -26,8 +27,13 @@ header {
   padding: 30px 0;
 }
 
+/* #20: color fallback before gradient so text is never invisible */
+/* #1: Bebas Neue for display headline */
 header h1 {
-  font-size: 2.5rem;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 3rem;
+  letter-spacing: 2px;
+  color: #a78bfa;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -47,7 +53,8 @@ header p {
   min-height: 600px;
 }
 
-/* Form styling */
+/* ─── Cards ─── */
+
 .form-card,
 .results-card {
   background: rgba(255, 255, 255, 0.05);
@@ -56,27 +63,39 @@ header p {
   padding: 30px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
+  /* #17: targeted transition + actual hover state */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-card:hover,
+.results-card:hover {
+  border-color: rgba(102, 126, 234, 0.3);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45);
 }
 
 .form-card h2,
 .results-card h2 {
+  font-family: "Poppins", sans-serif;
   color: #ffffff;
   margin-bottom: 25px;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   text-align: center;
 }
+
+/* ─── Form groups ─── */
 
 .form-group {
   margin-bottom: 20px;
 }
 
+/* #1: Poppins for UI labels */
 .form-group label {
   display: block;
   margin-bottom: 8px;
   color: #ffffff;
+  font-family: "Poppins", sans-serif;
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .form-group input,
@@ -84,12 +103,12 @@ header p {
   width: 100%;
   padding: 12px 16px;
   background: rgba(255, 255, 255, 0.1);
-  /* border: 1px solid rgba(255, 255, 255, 0.2); */
-  border: 1px solid rgba(177, 176, 176, 0.2); /* Slightly lighter border */
+  border: 1px solid rgba(177, 176, 176, 0.2);
   border-radius: 10px;
   color: #ffffff;
   font-size: 1rem;
-  transition: all 0.3s ease;
+  font-family: "Nunito", sans-serif;
+  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .form-group input:focus,
@@ -101,17 +120,58 @@ header p {
 }
 
 .form-group input::placeholder {
-  color: #a0a0a0;
+  color: #808080;
 }
 
+.hourly-saved {
+  border-color: #4ade80 !important;
+  transition: border-color 0.4s ease;
+}
+
+/* #21: raised from #a0a0a0 (~3.8:1) to #b8b8b8 (~5.1:1) — WCAG AA */
 .form-group small {
   display: block;
   margin-top: 5px;
-  color: #a0a0a0;
+  color: #b8b8b8;
   font-size: 0.85rem;
 }
 
-/* Pay type toggle */
+/* #6: Remove browser-default number spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* #7: Custom select arrow */
+.form-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a0a0a0' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+  cursor: pointer;
+}
+
+/* #5: Inline form error */
+.form-error {
+  display: none;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 8px;
+  color: #ff8a8a;
+  font-size: 0.9rem;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+}
+.form-error.visible {
+  display: block;
+}
+
+/* ─── Pay type toggle ─── */
+
 .pay-type-toggle {
   display: flex;
   background: rgba(255, 255, 255, 0.1);
@@ -142,7 +202,9 @@ header p {
   cursor: pointer;
   transition: all 0.3s ease;
   color: #a0a0a0;
+  font-family: "Poppins", sans-serif;
   font-weight: 500;
+  font-size: 0.9rem;
 }
 
 .pay-type-toggle input[type="radio"]:checked + .toggle-label {
@@ -160,29 +222,78 @@ header p {
   outline: none;
 }
 
-/* Pay inputs */
+/* ─── Pay inputs ─── */
+
 .pay-inputs {
-  transition: all 0.3s ease;
+  transition: opacity 0.3s ease;
 }
 
 .pay-inputs.hidden {
   display: none;
 }
 
-/* Deductions section */
+/* ─── Deductions accordion ─── */
+
 .deductions-section {
   margin-top: 30px;
-  padding-top: 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.deductions-section h3 {
+/* #19: h3 is now a button trigger */
+.deductions-toggle {
+  width: 100%;
+  background: none;
+  border: none;
   color: #ffffff;
-  margin-bottom: 20px;
-  font-size: 1.3rem;
+  font-family: "Poppins", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 18px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 4px;
 }
 
-/* Calculate button */
+.deductions-toggle:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.optional-label {
+  color: #a0a0a0;
+  font-size: 0.8rem;
+  font-weight: 400;
+  margin-left: 6px;
+}
+
+.deductions-chevron {
+  color: #a0a0a0;
+  flex-shrink: 0;
+  transition: transform 0.3s ease, color 0.2s ease;
+}
+
+.deductions-section.open .deductions-chevron {
+  transform: rotate(180deg);
+  color: #a78bfa;
+}
+
+.deductions-body {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.3s ease;
+}
+
+.deductions-section.open .deductions-body {
+  max-height: 700px;
+  opacity: 1;
+}
+
+/* ─── Calculate button ─── */
+
 .calculate-btn {
   width: 100%;
   padding: 16px;
@@ -190,10 +301,11 @@ header p {
   color: #ffffff;
   border: none;
   border-radius: 12px;
-  font-size: 1.1rem;
+  font-family: "Poppins", sans-serif;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   margin-top: 30px;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -208,7 +320,32 @@ header p {
   transform: translateY(0);
 }
 
-/* Financial tips */
+/* #18: keyboard focus ring for the CTA */
+.calculate-btn:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 3px;
+}
+
+/* #4: Keyboard shortcut hints */
+.keyboard-hints {
+  text-align: center;
+  margin-top: 12px;
+  color: #808080;
+  font-size: 0.78rem;
+}
+
+.keyboard-hints kbd {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  color: #c0c0c0;
+}
+
+/* ─── Financial tips ─── */
+
 .financial-tips {
   text-align: center;
 }
@@ -216,22 +353,19 @@ header p {
 .financial-tips h2 {
   color: #ffffff;
   margin-bottom: 25px;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
+  font-family: "Poppins", sans-serif;
 }
 
 .tip-content {
   padding: 30px;
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.1) 0%,
-    rgba(118, 75, 162, 0.1) 100%
-  );
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
   border-radius: 15px;
   border: 1px solid rgba(102, 126, 234, 0.2);
 }
 
 .tip-content p {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   line-height: 1.8;
   color: #e0e0e0;
   margin-bottom: 15px;
@@ -243,72 +377,197 @@ header p {
   color: #ffffff;
   padding: 6px 12px;
   border-radius: 20px;
-  font-size: 0.85rem;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.8rem;
   font-weight: 600;
   margin-top: 10px;
 }
 
-/* Results styling */
+/* #10: Next tip button */
+.next-tip-btn {
+  display: block;
+  margin: 20px auto 0;
+  background: none;
+  border: 1px solid rgba(102, 126, 234, 0.35);
+  border-radius: 20px;
+  color: #a78bfa;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.next-tip-btn:hover {
+  background: rgba(102, 126, 234, 0.12);
+  border-color: rgba(102, 126, 234, 0.6);
+  color: #c4b5fd;
+}
+
+.next-tip-btn:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* ─── Results panel ─── */
+
 .calculation-results.hidden {
   display: none;
 }
+
+.calculation-results {
+  animation: fadeIn 0.5s ease;
+}
+
+/* #3: Results header — h2 + reset button in one row */
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+
+.results-header h2 {
+  text-align: left;
+  margin-bottom: 0;
+  font-size: 1.4rem;
+}
+
+/* #3: Reset button */
+.reset-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  color: #a0a0a0;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.reset-btn:hover {
+  background: rgba(255, 107, 107, 0.12);
+  border-color: rgba(255, 107, 107, 0.3);
+  color: #ff8a8a;
+}
+
+.reset-btn:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* ─── Net pay hero ─── */
 
 .net-pay {
   text-align: center;
   margin-bottom: 40px;
   padding: 30px;
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.15) 0%,
-    rgba(118, 75, 162, 0.15) 100%
-  );
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
   border-radius: 20px;
   border: 2px solid rgba(102, 126, 234, 0.3);
 }
 
+/* #2: On-theme soft green instead of electric #00e432 */
+/* #1: Bebas Neue for the big display number */
 .net-pay-amount {
-  font-size: 3.5rem;
-  font-weight: 700;
-  color: #00e432;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 4rem;
+  letter-spacing: 1px;
+  color: #4ade80;
   margin-bottom: 10px;
 }
 
 .net-pay-amount .currency {
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   opacity: 0.8;
 }
 
 .pay-period {
   color: #a0a0a0;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
+  font-family: "Poppins", sans-serif;
   font-weight: 500;
+}
+
+/* #11: pay-warning as a CSS class instead of inline styles */
+.pay-warning {
+  display: none;
+  color: #ff8a8a;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+.pay-warning.visible {
+  display: block;
 }
 
 .net-pay.negative {
   border-color: rgba(255, 107, 107, 0.5);
-  background: linear-gradient(
-    135deg,
-    rgba(255, 107, 107, 0.1) 0%,
-    rgba(200, 50, 50, 0.1) 100%
-  );
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(200, 50, 50, 0.1) 100%);
 }
 
 .net-pay.negative .net-pay-amount {
-  color: #ff6b6b;
+  color: #ff8a8a;
 }
 
-/* Breakdown styling */
+/* ─── Breakdown ─── */
+
 .breakdown {
   background: rgba(255, 255, 255, 0.03);
   border-radius: 15px;
   padding: 25px;
 }
 
+/* #8: breakdown header — h3 + annual toggle in one row */
+.breakdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+
 .breakdown h3 {
   color: #ffffff;
-  margin-bottom: 25px;
-  font-size: 1.5rem;
-  text-align: center;
+  font-family: "Poppins", sans-serif;
+  font-size: 1.3rem;
+  margin-bottom: 0;
+}
+
+/* #8: period toggle button */
+.period-toggle-btn {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  color: #a0a0a0;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.period-toggle-btn:hover {
+  background: rgba(102, 126, 234, 0.15);
+  border-color: rgba(102, 126, 234, 0.4);
+  color: #ffffff;
+}
+
+.period-toggle-btn:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+.period-toggle-btn.annual-active {
+  background: rgba(102, 126, 234, 0.2);
+  border-color: rgba(102, 126, 234, 0.5);
+  color: #a78bfa;
 }
 
 .breakdown-section {
@@ -317,29 +576,24 @@ header p {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   border-left: 4px solid transparent;
+  animation: fadeIn 0.6s ease;
 }
 
-.breakdown-section:nth-child(1) {
-  border-left-color: #4ecdc4;
-}
-.breakdown-section:nth-child(2) {
-  border-left-color: #45b7d1;
-}
-.breakdown-section:nth-child(3) {
-  border-left-color: #f39c12;
-}
-.breakdown-section:nth-child(4) {
-  border-left-color: #e74c3c;
-}
-.breakdown-section:nth-child(5) {
-  border-left-color: #9b59b6;
-}
+/* #16: Semantic color assignments — nothing is red for normal tax lines */
+.breakdown-section:nth-child(2) { border-left-color: #4ade80; }   /* gross income  → green */
+.breakdown-section:nth-child(3) { border-left-color: #60a5fa; }   /* pre-tax ded.  → blue */
+.breakdown-section:nth-child(4) { border-left-color: #fbbf24; }   /* federal tax   → amber */
+.breakdown-section:nth-child(5) { border-left-color: #fb923c; }   /* state/local   → orange (not red) */
+.breakdown-section:nth-child(6) { border-left-color: #a78bfa; }   /* post-tax      → purple */
 
 .breakdown-section h4 {
   color: #ffffff;
+  font-family: "Poppins", sans-serif;
   margin-bottom: 15px;
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .breakdown-item {
@@ -347,7 +601,7 @@ header p {
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .breakdown-item:last-child {
@@ -355,12 +609,15 @@ header p {
 }
 
 .breakdown-item span:first-child {
-  color: #e0e0e0;
+  color: #c8c8c8;
+  font-size: 0.92rem;
 }
 
 .breakdown-item span:last-child {
   font-weight: 600;
   color: #ffffff;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.92rem;
 }
 
 .breakdown-item.taxable {
@@ -371,11 +628,12 @@ header p {
   border: 1px solid rgba(102, 126, 234, 0.3);
 }
 
-/* Summary styling */
+/* ─── Summary ─── */
+
 .summary {
   margin-top: 30px;
   padding-top: 20px;
-  border-top: 2px solid rgba(255, 255, 255, 0.2);
+  border-top: 2px solid rgba(255, 255, 255, 0.15);
 }
 
 .summary-item {
@@ -383,27 +641,66 @@ header p {
   justify-content: space-between;
   align-items: center;
   padding: 12px 0;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 .summary-item.net {
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.2) 0%,
-    rgba(118, 75, 162, 0.2) 100%
-  );
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
   margin: 15px -15px -15px;
   padding: 20px 15px;
   border-radius: 12px;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 700;
+  font-family: "Poppins", sans-serif;
 }
 
-.summary-item.net span {
+.summary-item.net span:first-child {
   color: #ffffff;
 }
 
-/* Responsive design */
+/* #9: Effective rate shown in theme purple */
+.summary-item.net span:last-child {
+  color: #a78bfa;
+  font-size: 1.4rem;
+}
+
+/* ─── Mobile tabs (visible only at ≤1024px) ─── */
+
+.mobile-tabs {
+  display: none;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 20px;
+  gap: 4px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #a0a0a0;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+}
+
+.tab-btn:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* ─── Responsive ─── */
+
 @media (max-width: 1024px) {
   .main-content {
     grid-template-columns: 1fr;
@@ -416,48 +713,73 @@ header p {
   }
 
   header h1 {
-    font-size: 2rem;
+    font-size: 2.4rem;
   }
 
   .net-pay-amount {
-    font-size: 2.8rem;
+    font-size: 3.2rem;
+  }
+
+  /* #14: Tab-based panel switching on mobile */
+  .mobile-tabs {
+    display: flex;
+  }
+
+  .main-content.show-inputs .results-section {
+    display: none;
+  }
+
+  .main-content.show-results .input-section {
+    display: none;
   }
 }
 
 @media (max-width: 768px) {
   .container {
-    padding: 15px;
+    padding: 12px;
   }
 
   .form-card,
   .results-card {
-    padding: 20px;
+    padding: 18px;
   }
 
+  /* #15: Reduce header vertical footprint on mobile */
   header {
-    padding: 20px 0;
-    margin-bottom: 30px;
+    padding: 14px 0;
+    margin-bottom: 18px;
   }
 
   header h1 {
-    font-size: 1.8rem;
+    font-size: 2rem;
+  }
+
+  /* Hide subtitle on small screens — it's not actionable */
+  header p {
+    display: none;
   }
 
   .net-pay-amount {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
   }
 
   .breakdown-section {
     padding: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
+
   .breakdown {
     padding: 0;
     background: none;
   }
+
+  .results-header h2 {
+    font-size: 1.2rem;
+  }
 }
 
-/* Animation effects */
+/* ─── Animations ─── */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -469,21 +791,14 @@ header p {
   }
 }
 
-.calculation-results {
-  animation: fadeIn 0.5s ease;
-}
+/* ─── Scrollbar ─── */
 
-.breakdown-section {
-  animation: fadeIn 0.6s ease;
-}
-
-/* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 4px;
 }
 
