@@ -1,13 +1,18 @@
-/* Reserve scrollbar space so the page never shifts when it appears */
-html {
-  scrollbar-gutter: stable;
-}
-
 /* Reset and base styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+html {
+  background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
+  min-height: 100%;
+  scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+  display: none;
 }
 
 body {
@@ -69,7 +74,9 @@ header p {
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   /* #17: targeted transition + actual hover state */
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .form-card:hover,
@@ -113,7 +120,10 @@ header p {
   color: #ffffff;
   font-size: 1rem;
   font-family: "Nunito", sans-serif;
-  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    background 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .form-group input:focus,
@@ -148,6 +158,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 input[type="number"] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 /* #7: Custom select arrow */
@@ -277,7 +288,9 @@ input[type="number"] {
 .deductions-chevron {
   color: #a0a0a0;
   flex-shrink: 0;
-  transition: transform 0.3s ease, color 0.2s ease;
+  transition:
+    transform 0.3s ease,
+    color 0.2s ease;
 }
 
 .deductions-section.open .deductions-chevron {
@@ -289,7 +302,9 @@ input[type="number"] {
   overflow: hidden;
   max-height: 0;
   opacity: 0;
-  transition: max-height 0.35s ease, opacity 0.3s ease;
+  transition:
+    max-height 0.35s ease,
+    opacity 0.3s ease;
 }
 
 .deductions-section.open .deductions-body {
@@ -310,7 +325,9 @@ input[type="number"] {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   margin-top: 30px;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -364,7 +381,11 @@ input[type="number"] {
 
 .tip-content {
   padding: 30px;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.1) 0%,
+    rgba(118, 75, 162, 0.1) 100%
+  );
   border-radius: 15px;
   border: 1px solid rgba(102, 126, 234, 0.2);
 }
@@ -472,7 +493,11 @@ input[type="number"] {
   text-align: center;
   margin-bottom: 40px;
   padding: 30px;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.15) 0%,
+    rgba(118, 75, 162, 0.15) 100%
+  );
   border-radius: 20px;
   border: 2px solid rgba(102, 126, 234, 0.3);
 }
@@ -512,7 +537,11 @@ input[type="number"] {
 
 .net-pay.negative {
   border-color: rgba(255, 107, 107, 0.5);
-  background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(200, 50, 50, 0.1) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 107, 107, 0.1) 0%,
+    rgba(200, 50, 50, 0.1) 100%
+  );
 }
 
 .net-pay.negative .net-pay-amount {
@@ -576,7 +605,9 @@ input[type="number"] {
 .breakdown-chevron {
   color: #a0a0a0;
   flex-shrink: 0;
-  transition: transform 0.3s ease, color 0.2s ease;
+  transition:
+    transform 0.3s ease,
+    color 0.2s ease;
 }
 
 .breakdown-toggle[aria-expanded="true"] .breakdown-chevron {
@@ -588,7 +619,9 @@ input[type="number"] {
   overflow: hidden;
   max-height: 2000px;
   opacity: 1;
-  transition: max-height 0.4s ease, opacity 0.3s ease;
+  transition:
+    max-height 0.4s ease,
+    opacity 0.3s ease;
 }
 
 .breakdown-sections.collapsed {
@@ -639,11 +672,21 @@ input[type="number"] {
 }
 
 /* #16: Semantic color assignments — nothing is red for normal tax lines */
-.breakdown-section:nth-child(2) { border-left-color: #4ade80; }   /* gross income  → green */
-.breakdown-section:nth-child(3) { border-left-color: #60a5fa; }   /* pre-tax ded.  → blue */
-.breakdown-section:nth-child(4) { border-left-color: #fbbf24; }   /* federal tax   → amber */
-.breakdown-section:nth-child(5) { border-left-color: #fb923c; }   /* state/local   → orange (not red) */
-.breakdown-section:nth-child(6) { border-left-color: #a78bfa; }   /* post-tax      → purple */
+.breakdown-section:nth-child(2) {
+  border-left-color: #4ade80;
+} /* gross income  → green */
+.breakdown-section:nth-child(3) {
+  border-left-color: #60a5fa;
+} /* pre-tax ded.  → blue */
+.breakdown-section:nth-child(4) {
+  border-left-color: #fbbf24;
+} /* federal tax   → amber */
+.breakdown-section:nth-child(5) {
+  border-left-color: #fb923c;
+} /* state/local   → orange (not red) */
+.breakdown-section:nth-child(6) {
+  border-left-color: #a78bfa;
+} /* post-tax      → purple */
 
 .breakdown-section h4 {
   color: #ffffff;
@@ -704,7 +747,11 @@ input[type="number"] {
 }
 
 .summary-item.net {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.2) 0%,
+    rgba(118, 75, 162, 0.2) 100%
+  );
   margin: 15px -15px -15px;
   padding: 20px 15px;
   border-radius: 12px;
@@ -848,24 +895,4 @@ input[type="number"] {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* ─── Scrollbar ─── */
-
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
