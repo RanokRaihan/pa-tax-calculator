@@ -8,6 +8,7 @@ A modern, responsive web application for calculating take-home pay with detailed
 
 - **Pay Frequencies**: Weekly, Biweekly, Semi-Monthly, Monthly, or Annually
 - **Pay Types**: Hourly (with overtime support) or Salary
+- **Hours Math**: Regular and overtime hours accept simple arithmetic (`+ - * /`), e.g. `8*5` or `32+8`
 - **Deductions**: Pre-tax and post-tax deductions
 - **Local Tax**: Support for municipal tax rates (Philadelphia, Pittsburgh, etc.)
 
@@ -39,6 +40,8 @@ A modern, responsive web application for calculating take-home pay with detailed
 2. **Choose Pay Type**: Select Hourly or Salary
 3. **Enter Pay Information**:
    - For Hourly: Enter rate, regular hours, and overtime hours
+     - Hours fields accept numbers or simple math using `+ - * /` (e.g. `8*5`, `32+8`, `45-5`); the result is shown under the field as you type
+     - Parentheses, exponents, and negative results are not allowed
    - For Salary: Enter annual salary amount
 4. **Add Deductions** (optional):
    - Pre-tax deductions (401k, health insurance)
@@ -94,7 +97,7 @@ pa-tax-calculator/
 
 - **Class-Based Architecture**: Organized, maintainable code structure
 - **Progressive Tax Calculation**: Accurate federal tax bracket calculations
-- **Form Validation**: Input validation with error handling
+- **Form Validation**: Input validation with error handling, including a strict `eval`-free parser for hours expressions
 - **Dynamic UI**: Real-time form switching between hourly/salary
 - **Responsive Updates**: Live calculation updates
 
