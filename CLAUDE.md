@@ -32,6 +32,8 @@ All logic lives in `script.js` as a single `TaxCalculator` class. The class is i
 6. Social Security is capped at the `socialSecurityWageBase` ($168,600 for 2024)
 7. Divide all annual tax amounts back to per-period, then subtract post-tax deductions
 
+**Hours expressions**: `#regularHours` and `#overtimeHours` are `type="text"` inputs that accept simple arithmetic (e.g. `10+2`, `8*5`). `evaluateHoursExpression(raw, label)` parses them strictly — no `eval`/`Function`: a character whitelist (digits, `.`, whitespace, `+ - * /`), a tokenizer that must reconstruct the input exactly, a `number (op number)*` grammar check (no parentheses, no unary minus, no spaces inside numbers), then a two-pass fold (`* /` before `+ -`). Division by zero throws; results are rounded to 2 decimals. `bindHoursExpression` shows a live `= N hours` hint (or the error) in `#regularHoursHint` / `#overtimeHoursHint`; `reset()` clears them via `clearHoursHints()`. Negative results (e.g. `4-6`) are caught by the existing "Hours cannot be negative" check in `getFormData`.
+
 **localStorage**: The hourly rate is persisted under the key `paCalc_hourlyRate` with a 500 ms debounce on input, plus an immediate save on blur. A brief green border flash confirms the save.
 
 **UI state**: The results panel (`#calculationResults`) starts hidden; financial tips (`#financialTips`) are shown first. After a calculation, tips are hidden and results are shown.

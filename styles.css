@@ -143,6 +143,14 @@ header p {
   transition: border-color 0.4s ease;
 }
 
+/* Invalid arithmetic expression in an hours field */
+.input-invalid {
+  border-color: #ff6b6b !important;
+}
+.form-group small.hint-error {
+  color: #ff8a8a;
+}
+
 /* #21: raised from #a0a0a0 (~3.8:1) to #b8b8b8 (~5.1:1) — WCAG AA */
 .form-group small {
   display: block;

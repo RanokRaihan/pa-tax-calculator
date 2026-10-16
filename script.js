@@ -144,6 +144,9 @@ class TaxCalculator {
       if (!isNaN(rate) && rate > 0) this.saveHourlyRate(rate);
     });
 
+    this.bindHoursExpression("regularHours", "regularHoursHint", "Regular hours");
+    this.bindHoursExpression("overtimeHours", "overtimeHoursHint", "Overtime hours");
+
     // #10: next tip cycling
     document.getElementById("nextTipBtn").addEventListener("click", () => this.nextTip());
 
@@ -272,6 +275,7 @@ class TaxCalculator {
     } catch (_) {}
 
     this.clearError();
+    this.clearHoursHints();
     this.lastCalculations = null;
     this.showAnnual = false;
 
@@ -298,6 +302,89 @@ class TaxCalculator {
     }
   }
 
+  // Strictly evaluate an hours expression: numbers joined by + - * / only.
+  // No eval — whitelist, tokenize, then a two-pass precedence fold.
+  evaluateHoursExpression(raw, label) {
+    const input = String(raw).trim();
+    if (input === "") return 0;
+
+    if (!/^[\d.\s+\-*/]+$/.test(input)) {
+      throw new Error(`${label} may only contain numbers and + - * /`);
+    }
+
+    // Spaces are allowed around operators, never inside a number ("1 0")
+    if (/[\d.]\s+[\d.]/.test(input)) {
+      throw new Error(`${label} contains an invalid number.`);
+    }
+
+    const compact = input.replace(/\s+/g, "");
+    const tokens = compact.match(/\d+(?:\.\d+)?|\.\d+|[+\-*/]/g) || [];
+    if (tokens.join("") !== compact) {
+      throw new Error(`${label} contains an invalid number.`);
+    }
+
+    // Grammar: number (op number)* — operators and numbers must alternate
+    const isOp = (t) => "+-*/".includes(t);
+    if (tokens.length % 2 === 0 || tokens.some((t, i) => isOp(t) !== (i % 2 === 1))) {
+      throw new Error(`${label} is not a valid expression.`);
+    }
+
+    // Pass 1: fold * and /
+    const terms = [parseFloat(tokens[0])];
+    const addOps = [];
+    for (let i = 1; i < tokens.length; i += 2) {
+      const op = tokens[i];
+      const num = parseFloat(tokens[i + 1]);
+      if (op === "*") {
+        terms[terms.length - 1] *= num;
+      } else if (op === "/") {
+        if (num === 0) throw new Error(`Cannot divide by zero in ${label.toLowerCase()}.`);
+        terms[terms.length - 1] /= num;
+      } else {
+        addOps.push(op);
+        terms.push(num);
+      }
+    }
+
+    // Pass 2: fold + and -
+    let result = terms[0];
+    addOps.forEach((op, i) => {
+      result = op === "+" ? result + terms[i + 1] : result - terms[i + 1];
+    });
+
+    if (!Number.isFinite(result)) throw new Error(`${label} is not a valid expression.`);
+    return Math.round(result * 100) / 100;
+  }
+
+  // Live feedback under an hours field: shows "= N hours" or the validation error
+  bindHoursExpression(inputId, hintId, label) {
+    const input = document.getElementById(inputId);
+    const hint = document.getElementById(hintId);
+
+    input.addEventListener("input", () => {
+      try {
+        const value = this.evaluateHoursExpression(input.value, label);
+        const hasOperator = /[+\-*/]/.test(input.value.trim());
+        hint.textContent = hasOperator ? `= ${value} hours` : "";
+        hint.classList.remove("hint-error");
+        input.classList.remove("input-invalid");
+      } catch (error) {
+        hint.textContent = error.message;
+        hint.classList.add("hint-error");
+        input.classList.add("input-invalid");
+      }
+    });
+  }
+
+  clearHoursHints() {
+    ["regularHours", "overtimeHours"].forEach((id) => {
+      document.getElementById(id).classList.remove("input-invalid");
+      const hint = document.getElementById(`${id}Hint`);
+      hint.textContent = "";
+      hint.classList.remove("hint-error");
+    });
+  }
+
   getFormData() {
     const payFrequency = document.getElementById("payFrequency").value;
     const filingStatus = document.getElementById("filingStatus").value;
@@ -314,8 +401,8 @@ class TaxCalculator {
 
     if (payType === "hourly") {
       const hourlyRate = parseFloat(document.getElementById("hourlyRate").value) || 0;
-      const regularHours = parseFloat(document.getElementById("regularHours").value) || 0;
-      const overtimeHours = parseFloat(document.getElementById("overtimeHours").value) || 0;
+      const regularHours = this.evaluateHoursExpression(document.getElementById("regularHours").value, "Regular hours");
+      const overtimeHours = this.evaluateHoursExpression(document.getElementById("overtimeHours").value, "Overtime hours");
 
       if (hourlyRate <= 0) throw new Error("Please enter a valid hourly rate.");
       if (regularHours < 0 || overtimeHours < 0) throw new Error("Hours cannot be negative.");

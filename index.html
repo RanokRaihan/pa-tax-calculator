@@ -94,11 +94,15 @@
                 </div>
                 <div class="form-group">
                   <label for="regularHours">Regular Hours</label>
-                  <input type="number" id="regularHours" name="regularHours" step="0.01" min="0" placeholder="40" />
+                  <input type="text" id="regularHours" name="regularHours" inputmode="decimal" autocomplete="off"
+                    placeholder="40 or 8*5" aria-describedby="regularHoursHint" />
+                  <small id="regularHoursHint" aria-live="polite"></small>
                 </div>
                 <div class="form-group">
                   <label for="overtimeHours">Overtime Hours</label>
-                  <input type="number" id="overtimeHours" name="overtimeHours" step="0.1" min="0" placeholder="0" />
+                  <input type="text" id="overtimeHours" name="overtimeHours" inputmode="decimal" autocomplete="off"
+                    placeholder="0 or 2+3" aria-describedby="overtimeHoursHint" />
+                  <small id="overtimeHoursHint" aria-live="polite"></small>
                 </div>
               </div>
 
